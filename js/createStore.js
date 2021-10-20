@@ -1,4 +1,26 @@
-let state;
+//Remember, that this state variable holds a representation of all of our data we need to display.
+//wrap state inside function so that data does not get overwritten since it is a global variable
+// instead of:
+    // let state;
+//do this:
+function createStore(reducer) {
+  let state;
+
+  //state is now accessible to dispatch
+  function dispatch(action){
+    state = reducer(state, action);
+    render();
+  };
+
+  function getState() {
+  return state;
+  }
+
+  return {
+    dispatch,
+    getState
+  };
+}
 
 function reducer(state = { count: 0 }, action) {
   switch (action.type) {
@@ -10,19 +32,20 @@ function reducer(state = { count: 0 }, action) {
   }
 };
 
-function dispatch(action){
-  state = reducer(state, action);
-  render();
-};
+
 
 function render() {
   let container = document.getElementById('container');
-  container.textContent = state.count;
+  container.textContent = store.getState().count;
 };
 
-dispatch({ type: '@@INIT' })
+
+let store = createStore(reducer); //createStore takes the reducer as an argument
+store.dispatch({ type: '@@INIT' });
+
 let button = document.getElementById('button');
 
-button.addEventListener('click', function() {
-    dispatch({ type: 'INCREASE_COUNT' });
+
+button.addEventListener('click', () => {
+    store.dispatch({ type: 'INCREASE_COUNT' });
 })
